@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fondos de Investigación — Vinculación Inclusiva</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ec;
+    --surface: #ffffff;
+    --ink: #1a1a1a;
+    --ink-muted: #666;
+    --green: #2d6a4f;
+    --green-light: #52b788;
+    --green-pale: #d8f3dc;
+    --amber: #e76f51;
+    --amber-pale: #fde8e1;
+    --border: #e0dbd0;
+    --shadow: 0 2px 20px rgba(0,0,0,0.07);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--green);
+    padding: 28px 24px 24px;
+    color: white;
+  }
+
+  header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 6px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    line-height: 1.2;
+    font-weight: 400;
+  }
+
+  .subtitle {
+    font-size: 13px;
+    opacity: 0.75;
+    margin-top: 6px;
+  }
+
+  .search-wrap {
+    padding: 20px 16px 8px;
+  }
+
+  .search-box {
+    position: relative;
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 14px 14px 14px 44px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    background: white;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus {
+    border-color: var(--green-light);
+  }
+
+  input[type="text"]::placeholder { color: #aaa; }
+
+  .cards {
+    padding: 8px 16px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: transform 0.15s;
+  }
+
+  .card:active { transform: scale(0.985); }
+
+  .card-header {
+    padding: 18px 20px 14px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .researcher-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.2;
+    flex: 1;
+  }
+
+  .balance-badge {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .balance-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .balance-amount {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--green);
+    display: block;
+  }
+
+  .balance-amount.negative {
+    color: var(--amber);
+  }
+
+  .progress-wrap {
+    padding: 0 20px 16px;
+  }
+
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-muted);
+    margin-bottom: 5px;
+  }
+
+  .progress-bar {
+    height: 6px;
+    background: #eee;
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green-light), var(--green));
+    border-radius: 99px;
+    transition: width 0.6s ease;
+  }
+
+  .progress-fill.danger {
+    background: linear-gradient(90deg, #f4a261, var(--amber));
+  }
+
+  .chevron {
+    padding: 0 20px;
+    padding-bottom: 14px;
+    font-size: 12px;
+    color: var(--green);
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .chevron svg {
+    transition: transform 0.25s;
+  }
+
+  .chevron.open svg {
+    transform: rotate(180deg);
+  }
+
+  .detail-panel {
+    display: none;
+    border-top: 1px solid var(--border);
+    padding: 16px 20px;
+    background: #fafaf8;
+  }
+
+  .detail-panel.open { display: block; }
+
+  .detail-title {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin-bottom: 12px;
+  }
+
+  .movement {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    gap: 10px;
+  }
+
+  .movement:last-child { border-bottom: none; }
+
+  .mov-desc { color: var(--ink); flex: 1; }
+
+  .mov-amounts {
+    display: flex;
+    gap: 14px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .mov-col {
+    min-width: 80px;
+  }
+
+  .mov-col-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    display: block;
+  }
+
+  .mov-col-val {
+    font-weight: 500;
+    display: block;
+    font-size: 13px;
+  }
+
+  .mov-col-val.credit { color: var(--green); }
+  .mov-col-val.debit { color: var(--amber); }
+  .mov-col-val.neutral { color: var(--ink-muted); }
+
+  .summary-row {
+    margin-top: 14px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-box {
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .stat-box .stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--ink-muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .stat-box .stat-val {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .stat-box .stat-val.green { color: var(--green); }
+  .stat-box .stat-val.amber { color: var(--amber); }
+
+  .no-results {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--ink-muted);
+  }
+
+  .no-results svg { margin-bottom: 12px; opacity: 0.3; }
+  .no-results p { font-size: 15px; }
+
+  .updated-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--ink-muted);
+    padding: 0 16px 20px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Subsidios de investigación</div>
+  <h1>Vinculación Inclusiva</h1>
+  <div class="subtitle">Consulta de saldos disponibles</div>
+</header>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input type="text" id="search" placeholder="Buscar por nombre de investigador…" oninput="filterCards()" autocomplete="off">
+  </div>
+</div>
+
+<div class="cards" id="cards-container"></div>
+<div class="updated-note" id="updated-note">Datos actualizados desde la planilla oficial</div>
+
+<script>
+const researchers = [
+  {
+    name: "Boschetti Carlos",
+    asignado: 5000000,
+    saldo: 2089402.71,
+    movimientos: [
+      { desc: "Primer adelanto",        solicitado: 1600000,    gastado: null,      nota: "Referencia pendiente" },
+      { desc: "Segundo adelanto",       solicitado: 1000000,    gastado: null,      nota: null },
+      { desc: "Pedido compra directa",  solicitado: 310597.29,  gastado: 310597.29, nota: null },
+    ]
+  },
+  {
+    name: "Calviño Gabriel",
+    asignado: 1500000,
+    saldo: 0,
+    movimientos: [
+      { desc: "Pedido compra directa",  solicitado: null,       gastado: 994933,    nota: null },
+      { desc: "Primer adelanto",        solicitado: 505067,     gastado: null,      nota: null },
+    ]
+  },
+  {
+    name: "Cricco Julia",
+    asignado: 5000000,
+    saldo: 2750547,
+    movimientos: [
+      { desc: "Primer adelanto",        solicitado: null,       gastado: null,      nota: "Sin datos registrados" },
+      { desc: "Compra directa",         solicitado: 2249453,    gastado: null,      nota: null },
+    ]
+  },
+  {
+    name: "Ingrassia Romina",
+    asignado: 5000000,
+    saldo: 275739,
+    movimientos: [
+      { desc: "Compra directa Rotor",   solicitado: 5000000,    gastado: 4724261,   nota: null },
+    ]
+  },
+  {
+    name: "Rodriguez María Victoria",
+    asignado: 1500000,
+    saldo: -100000,
+    movimientos: [
+      { desc: "Primer adelanto",        solicitado: 1500000,    gastado: null,      nota: null },
+      { desc: "Anticipo (1)",           solicitado: 800000,     gastado: 800000,    nota: null },
+      { desc: "Anticipo (2)",           solicitado: 800000,     gastado: null,      nota: null },
+    ]
+  },
+  {
+    name: "Tubio Gisela",
+    asignado: 5000000,
+    saldo: 1440000,
+    movimientos: [
+      { desc: "Primer adelanto",        solicitado: 2000000,    gastado: null,      nota: "Referencia pendiente" },
+      { desc: "Compra al exterior",     solicitado: null,       gastado: 560000,    nota: "USD 400" },
+      { desc: "Segundo adelanto",       solicitado: 1000000,    gastado: null,      nota: null },
+    ]
+  }
+];
+
+function fmt(n) {
+  if (n === null || n === undefined) return "—";
+  return "$" + Math.abs(n).toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+}
+
+function pct(saldo, asignado) {
+  if (asignado <= 0) return 0;
+  return Math.max(0, Math.min(100, (saldo / asignado) * 100));
+}
+
+function gastado(r) {
+  return r.asignado - r.saldo;
+}
+
+function buildCard(r) {
+  const id = r.name.replace(/\s+/g, "_");
+  const pctVal = pct(r.saldo, r.asignado);
+  const isNeg = r.saldo < 0;
+  const isDanger = pctVal < 20 || isNeg;
+  const gastadoVal = gastado(r);
+
+  const movRows = r.movimientos.map(m => `
+    <div class="movement">
+      <div class="mov-desc">
+        ${m.desc}
+        ${m.nota ? `<br><span style="font-size:11px;color:#aaa">${m.nota}</span>` : ""}
+      </div>
+      <div class="mov-amounts">
+        <div class="mov-col">
+          <span class="mov-col-label">Solicitado</span>
+          <span class="mov-col-val neutral">${m.solicitado !== null ? fmt(m.solicitado) : "—"}</span>
+        </div>
+        <div class="mov-col">
+          <span class="mov-col-label">Gastado</span>
+          <span class="mov-col-val debit">${m.gastado !== null ? fmt(m.gastado) : "—"}</span>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  return `
+    <div class="card" id="card-${id}">
+      <div class="card-header" onclick="toggleDetail('${id}')">
+        <div class="researcher-name">${r.name}</div>
+        <div class="balance-badge">
+          <span class="balance-label">Saldo disponible</span>
+          <span class="balance-amount ${isNeg ? 'negative' : ''}">${fmt(r.saldo)}</span>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-labels">
+          <span>Asignado: ${fmt(r.asignado)}</span>
+          <span>${pctVal.toFixed(0)}% disponible</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill ${isDanger ? 'danger' : ''}" style="width:${pctVal}%"></div>
+        </div>
+      </div>
+
+      <div class="chevron" id="chevron-${id}" onclick="toggleDetail('${id}')">
+        <span id="chevron-label-${id}">Ver movimientos</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+      </div>
+
+      <div class="detail-panel" id="detail-${id}">
+        <div class="detail-title">Movimientos registrados</div>
+        ${movRows}
+        <div class="summary-row">
+          <div class="stat-box">
+            <span class="stat-label">Asignado</span>
+            <span class="stat-val">${fmt(r.asignado)}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Utilizado</span>
+            <span class="stat-val amber">${fmt(gastadoVal)}</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">Saldo</span>
+            <span class="stat-val ${isNeg ? 'amber' : 'green'}">${fmt(r.saldo)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderAll(list) {
+  const container = document.getElementById("cards-container");
+  const note = document.getElementById("updated-note");
+  if (list.length === 0) {
+    container.innerHTML = `
+      <div class="no-results">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <p>No se encontró ningún investigador</p>
+      </div>
+    `;
+    note.style.display = "none";
+  } else {
+    container.innerHTML = list.map(buildCard).join("");
+    note.style.display = "block";
+  }
+}
+
+function filterCards() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const filtered = q === "" ? researchers : researchers.filter(r => r.name.toLowerCase().includes(q));
+  renderAll(filtered);
+}
+
+function toggleDetail(id) {
+  const panel = document.getElementById("detail-" + id);
+  const chevron = document.getElementById("chevron-" + id);
+  const label = document.getElementById("chevron-label-" + id);
+  const isOpen = panel.classList.contains("open");
+  panel.classList.toggle("open", !isOpen);
+  chevron.classList.toggle("open", !isOpen);
+  label.textContent = isOpen ? "Ver movimientos" : "Ocultar movimientos";
+}
+
+// Initial render
+renderAll(researchers);
+</script>
+</body>
+</html>
